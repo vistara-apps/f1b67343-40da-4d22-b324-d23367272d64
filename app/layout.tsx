@@ -6,6 +6,7 @@ import { Providers } from './providers'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
   title: 'FootyForecast - Predict, Analyze, Dominate',
   description: 'AI-driven football match insights, live game momentum tracking, and personalized football content.',
   openGraph: {
