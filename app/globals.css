@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-text;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer components {
+  .gradient-bg {
+    background: linear-gradient(135deg, hsl(220, 10%, 4%) 0%, hsl(217, 70%, 8%) 50%, hsl(13, 70%, 8%) 100%);
+  }
+  
+  .glass-effect {
+    backdrop-filter: blur(10px);
+    background: hsla(220, 10%, 12%, 0.8);
+    border: 1px solid hsla(220, 10%, 20%, 0.5);
+  }
+  
+  .momentum-bar {
+    background: linear-gradient(90deg, #ef4444 0%, #f59e0b 25%, #10b981 50%, #3b82f6 75%, #8b5cf6 100%);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
