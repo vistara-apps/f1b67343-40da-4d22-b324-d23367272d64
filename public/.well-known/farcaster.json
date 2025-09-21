@@ -1,0 +1,30 @@
+{
+  "accountAssociation": {
+    "header": "",
+    "payload": "",
+    "signature": ""
+  },
+  "frame": {
+    "version": "1",
+    "name": "FootyForecast",
+    "subtitle": "Built with Zara",
+    "description": "FootyForecast is a Base Mini App built with Zara.",
+    "iconUrl": "https://0co.to/images/zara-2.png",
+    "homeUrl": "https://f1b6734340da4d22b324d23367272d64-b2v3.vercel.app",
+    "splashImageUrl": "https://f1b6734340da4d22b324d23367272d64-b2v3.vercel.app/splash.png",
+    "splashBackgroundColor": "#000000",
+    "heroImageUrl": "https://f1b6734340da4d22b324d23367272d64-b2v3.vercel.app/image.png",
+    "tagline": "FootyForecast",
+    "screenshotUrls": [
+      "https://f1b6734340da4d22b324d23367272d64-b2v3.vercel.app/screenshot.png",
+      "https://f1b6734340da4d22b324d23367272d64-b2v3.vercel.app/screenshot.png"
+    ],
+    "primaryCategory": "social",
+    "tags": [
+      "base",
+      "miniapp",
+      "onchainkit"
+    ],
+    "webhookUrl": "https://f1b6734340da4d22b324d23367272d64-b2v3.vercel.app/api/webhook"
+  }
+}
