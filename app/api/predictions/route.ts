@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-  baseURL: "https://openrouter.ai/api/v1",
-  dangerouslyAllowBrowser: true,
-})
-
 export async function POST(req: NextRequest) {
   try {
     const { homeTeam, awayTeam, matchData } = await req.json()
+
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY || '',
+      baseURL: "https://openrouter.ai/api/v1",
+      dangerouslyAllowBrowser: true,
+    })
 
     const prompt = `
       Analyze the upcoming football match between ${homeTeam} and ${awayTeam}.
