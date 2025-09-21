@@ -1,0 +1,119 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userId            String   @id @default(cuid())
+  farcasterProfile  Json?    // Farcaster profile data
+  favoriteTeams     String[] // Array of team IDs
+  favoriteLeagues   String[] // Array of league IDs
+  preferences       Json     // User preferences (notifications, theme, etc.)
+  subscriptionTier  String   @default("free") // free, basic, premium
+  purchaseHistory   Json[]   // Array of purchase records
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Team {
+  teamId      String @id
+  name        String
+  logo        String?
+  leagueId    String
+  shortName   String?
+  colors      Json?  // Primary and secondary colors
+  league      League @relation(fields: [leagueId], references: [leagueId])
+  players     Player[]
+  homeMatches Match[] @relation("HomeTeam")
+  awayMatches Match[] @relation("AwayTeam")
+
+  @@map("teams")
+}
+
+model Player {
+  playerId  String @id
+  name      String
+  teamId    String
+  position  String
+  stats     Json   // Player statistics
+  team      Team   @relation(fields: [teamId], references: [teamId])
+
+  @@map("players")
+}
+
+model Match {
+  matchId             String   @id
+  homeTeamId          String
+  awayTeamId          String
+  dateTime            DateTime
+  predictedWinner     String?  // home, away, draw
+  predictionConfidence Float?
+  liveStatus          String   @default("scheduled") // scheduled, live, finished
+  momentumScore       Float?
+  score               Json?    // { home: number, away: number }
+  historicalDataRef   String?
+  homeTeam            Team     @relation("HomeTeam", fields: [homeTeamId], references: [teamId])
+  awayTeam            Team     @relation("AwayTeam", fields: [awayTeamId], references: [teamId])
+  leagueId            String
+  league              League   @relation(fields: [leagueId], references: [leagueId])
+
+  @@map("matches")
+}
+
+model League {
+  leagueId String @id
+  name     String
+  country  String
+  logo     String?
+  season   String @default("2024-25")
+  teams    Team[]
+  matches  Match[]
+
+  @@map("leagues")
+}
+
+model Content {
+  contentId      String   @id @default(cuid())
+  title          String
+  url            String
+  source         String
+  tags           String[]
+  relevantTeams  String[]
+  relevantLeagues String[]
+  publishedAt    DateTime
+  summary        String?
+  createdAt      DateTime @default(now())
+
+  @@map("content")
+}
+
+model Prediction {
+  predictionId    String   @id @default(cuid())
+  matchId         String
+  userId          String?
+  prediction      Json     // Prediction data
+  confidence      Float
+  isCorrect       Boolean?
+  createdAt       DateTime @default(now())
+
+  @@map("predictions")
+}
+
+model LiveMomentum {
+  momentumId   String   @id @default(cuid())
+  matchId      String   @unique
+  currentMomentum Float
+  events       Json[]   // Array of momentum events
+  lastUpdated  DateTime @updatedAt
+
+  @@map("live_momentum")
+}

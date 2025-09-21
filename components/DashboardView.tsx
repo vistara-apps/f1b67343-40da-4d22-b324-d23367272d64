@@ -6,8 +6,8 @@ import { PredictionDetail } from './ui/PredictionDetail'
 import { NewsFeedItem } from './ui/NewsFeedItem'
 import { Card } from './ui/Card'
 import { Button } from './ui/Button'
-import { TrendingUp, Zap, Clock, Star } from 'lucide-react'
-import { Match, Content, PredictionAnalysis } from '@/lib/types'
+import { TrendingUp, Zap, Clock, Star, RefreshCw } from 'lucide-react'
+import { Match, Content } from '@/lib/types'
 
 // Mock data for demonstration
 const mockMatches: Match[] = [
@@ -65,17 +65,67 @@ const mockNews: Content[] = [
 export function DashboardView() {
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null)
   const [activeSection, setActiveSection] = useState<'predictions' | 'live' | 'news'>('predictions')
+  const [matches, setMatches] = useState<Match[]>([])
+  const [news, setNews] = useState<Content[]>([])
+  const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  const fetchData = async () => {
+    try {
+      setLoading(true)
+
+      // Fetch matches
+      const matchesResponse = await fetch('/api/matches?limit=10')
+      if (matchesResponse.ok) {
+        const matchesData = await matchesResponse.json()
+        setMatches(matchesData)
+      }
+
+      // Fetch news
+      const newsResponse = await fetch('/api/content?limit=10')
+      if (newsResponse.ok) {
+        const newsData = await newsResponse.json()
+        setNews(newsData)
+      }
+    } catch (error) {
+      console.error('Failed to fetch data:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const refreshData = async () => {
+    setRefreshing(true)
+    await fetchData()
+    setRefreshing(false)
+  }
 
   return (
     <div className="container mx-auto px-4 py-6 space-y-6">
       {/* Welcome Section */}
       <Card className="p-6 bg-gradient-to-r from-primary/10 to-accent/10 border-primary/20">
-        <div className="flex items-center space-x-4">
-          <div className="text-4xl">⚽</div>
-          <div>
-            <h1 className="text-2xl font-bold text-text">Welcome to FootyForecast</h1>
-            <p className="text-muted">AI-powered predictions and live match insights</p>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <div className="text-4xl">⚽</div>
+            <div>
+              <h1 className="text-2xl font-bold text-text">Welcome to FootyForecast</h1>
+              <p className="text-muted">AI-powered predictions and live match insights</p>
+            </div>
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={refreshData}
+            disabled={refreshing}
+            className="flex items-center space-x-2"
+          >
+            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+            <span>{refreshing ? 'Refreshing...' : 'Refresh'}</span>
+          </Button>
         </div>
       </Card>
 
@@ -131,17 +181,28 @@ export function DashboardView() {
               Premium Analysis
             </Button>
           </div>
-          
-          <div className="grid gap-4">
-            {mockMatches.map((match) => (
-              <MatchCard
-                key={match.matchId}
-                match={match}
-                variant="upcoming"
-                onClick={() => setSelectedMatch(match)}
-              />
-            ))}
-          </div>
+
+          {loading ? (
+            <Card className="p-6 text-center">
+              <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+              <p className="text-muted">Loading matches...</p>
+            </Card>
+          ) : matches.length > 0 ? (
+            <div className="grid gap-4">
+              {matches.slice(0, 6).map((match) => (
+                <MatchCard
+                  key={match.matchId}
+                  match={match}
+                  variant="upcoming"
+                  onClick={() => setSelectedMatch(match)}
+                />
+              ))}
+            </div>
+          ) : (
+            <Card className="p-6 text-center">
+              <p className="text-muted">No upcoming matches found. Try refreshing or check back later.</p>
+            </Card>
+          )}
         </div>
       )}
 
@@ -159,11 +220,22 @@ export function DashboardView() {
       {activeSection === 'news' && (
         <div className="space-y-4">
           <h2 className="text-xl font-semibold text-text">Personalized News Feed</h2>
-          <div className="space-y-4">
-            {mockNews.map((news) => (
-              <NewsFeedItem key={news.contentId} content={news} />
-            ))}
-          </div>
+          {loading ? (
+            <Card className="p-6 text-center">
+              <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+              <p className="text-muted">Loading news...</p>
+            </Card>
+          ) : news.length > 0 ? (
+            <div className="space-y-4">
+              {news.map((newsItem) => (
+                <NewsFeedItem key={newsItem.contentId} content={newsItem} />
+              ))}
+            </div>
+          ) : (
+            <Card className="p-6 text-center">
+              <p className="text-muted">No news available. Check back later for updates.</p>
+            </Card>
+          )}
         </div>
       )}
 

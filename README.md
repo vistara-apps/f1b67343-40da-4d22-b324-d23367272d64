@@ -19,6 +19,17 @@ A Base MiniApp for football fans to get AI-driven match insights, track live gam
 
 ## Getting Started
 
+### Prerequisites
+
+- Node.js 18+
+- PostgreSQL database
+- API Keys:
+  - [Football-Data.org API](https://www.football-data.org/) - Free tier available
+  - [OpenAI API](https://platform.openai.com/) - For AI predictions
+  - [Coinbase MiniKit](https://docs.cdp.coinbase.com/minikit/) - Optional for Base integration
+
+### Setup Instructions
+
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
@@ -30,24 +41,62 @@ A Base MiniApp for football fans to get AI-driven match insights, track live gam
    npm install
    ```
 
-3. **Set up environment variables**
+3. **Set up the database**
+   ```bash
+   # Set up PostgreSQL database (local or cloud)
+   # Update DATABASE_URL in .env.local
+   ```
+
+4. **Set up environment variables**
    ```bash
    cp .env.example .env.local
    ```
-   
-   Fill in your API keys:
-   - `NEXT_PUBLIC_MINIKIT_API_KEY`: Your MiniKit API key
-   - `NEXT_PUBLIC_ONCHAINKIT_API_KEY`: Your OnchainKit API key
-   - `OPENAI_API_KEY`: Your OpenAI API key
-   - `FOOTBALL_DATA_API_KEY`: Your Football Data API key
 
-4. **Run the development server**
+   Fill in your API keys:
+   - `DATABASE_URL`: PostgreSQL connection string
+   - `FOOTBALL_DATA_API_KEY`: Your Football Data API key
+   - `OPENAI_API_KEY`: Your OpenAI API key
+   - `NEXT_PUBLIC_BASE_URL`: Your app URL (http://localhost:3000 for development)
+
+5. **Initialize the database**
+   ```bash
+   # Generate Prisma client
+   npx prisma generate
+
+   # Run database migrations
+   npx prisma migrate dev --name init
+
+   # (Optional) Seed with initial data
+   npx prisma db seed
+   ```
+
+6. **Run the development server**
    ```bash
    npm run dev
    ```
 
-5. **Open your browser**
+7. **Open your browser**
    Navigate to [http://localhost:3000](http://localhost:3000)
+
+### Database Setup
+
+The app uses Prisma ORM with PostgreSQL. The schema includes:
+
+- **Users**: Farcaster profiles, preferences, subscriptions
+- **Teams**: Football teams with league associations
+- **Players**: Player data and statistics
+- **Matches**: Match schedules and live data
+- **Leagues**: League information
+- **Predictions**: AI-generated predictions
+- **Content**: News and personalized content
+
+### API Integration
+
+The app integrates with:
+
+- **Football-Data.org API**: Real match data, teams, and leagues
+- **OpenAI API**: AI-powered match predictions and analysis
+- **Farcaster Frames**: Social sharing and frame interactions
 
 ## Base MiniApp Features
 
@@ -63,9 +112,18 @@ A Base MiniApp for football fans to get AI-driven match insights, track live gam
 
 ## API Endpoints
 
-- `/api/frame` - Farcaster frame interactions
-- `/api/og` - Dynamic Open Graph image generation
-- `/api/predictions` - AI-powered match predictions
+### Core APIs
+- `GET/POST /api/matches` - Match data and schedules
+- `GET /api/teams` - Team information
+- `GET /api/leagues` - League data
+- `GET/POST /api/users` - User management and preferences
+- `GET/POST /api/predictions` - AI-powered match predictions
+- `GET/POST /api/content` - Personalized news and content
+- `GET/POST /api/live-momentum` - Live match momentum tracking
+
+### Farcaster Integration
+- `GET/POST /api/frame` - Farcaster frame interactions
+- `GET /api/og` - Dynamic Open Graph image generation
 
 ## Project Structure
 
